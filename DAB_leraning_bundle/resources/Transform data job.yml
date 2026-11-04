@@ -1,0 +1,25 @@
+# This job runs the "Transform data" notebook on a daily schedule.
+resources:
+  jobs:
+    transform_data_job:
+      name: transform_data_job
+
+      schedule:
+        # Cron: sec min hour day month day-of-week
+        # Runs every day at 5:00 PM (17:00)
+        quartz_cron_expression: "0 0 17 * * ?"
+        timezone_id: "Asia/Kolkata"
+        pause_status: UNPAUSED
+
+      tasks:
+        - task_key: transform_data
+          notebook_task:
+            notebook_path: ../src/Transform data.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+          new_cluster:
+            spark_version: 15.4.x-scala2.12
+            node_type_id: Standard_DS3_v2
+            num_workers: 1

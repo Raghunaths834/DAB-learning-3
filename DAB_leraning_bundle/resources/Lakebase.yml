@@ -1,0 +1,37 @@
+
+resources:
+  database_instances:
+
+    # ---- Parent (root) Lakebase instance ----
+    root:
+      name: my-lakebase-instance
+      capacity: CU_1
+      # Optional knobs you can tune for a parent instance:
+      # node_count: 1
+      # enable_readable_secondaries: false
+      # retention_window_in_days: 7
+
+    # ---- Child instance (acts as a branch off the parent) ----
+    dev_branch:
+      name: my-lakebase-instance-dev
+      capacity: CU_1
+      parent_instance_ref:
+        name: ${resources.database_instances.root.name}
+
+  # ---- Expose the Lakebase database as a Unity Catalog catalog ----
+  database_catalogs:
+    my_catalog:
+      name: my_lakebase_catalog
+      database_instance_name: ${resources.database_instances.root.name}
+      database_name: my_db
+      create_database_if_not_exists: true
+
+# ---- Permissions on these resources ----
+# Top-level permissions in a resource file apply to every resource defined in
+# that file. Valid levels are CAN_MANAGE, CAN_VIEW, and CAN_RUN. Adjust
+# group/user names to your workspace.
+permissions:
+  - level: CAN_MANAGE
+    user_name: raghunaths834@gmail.com
+  - level: CAN_RUN
+    group_name: data-engineers
